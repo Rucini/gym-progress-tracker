@@ -29,3 +29,8 @@ coverage/
 # Log files
 logs/
 *.log
+
+# terraform files
+*.tfstate
+.terraform/
+.terraform.lock.hcl

@@ -1,4 +1,4 @@
-name: FitPulse Continuous Integration
+name: CI Workflow for Gym Progress Tracker
 
 on:
   push:
@@ -90,6 +90,105 @@ jobs:
         working-directory: frontend
         run: npm test
 
-      - name: Run Frontend Production Build Check
-        working-directory: frontend
-        run: npm run build
+  docker-security:
+    name: Docker Build and Vulnerability Scan
+    runs-on: ubuntu-latest
+    needs: [backend-ci, frontend-ci]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Calculate Image Tags
+        id: image-tags
+        shell: bash
+        run: |
+          echo "sha=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+          echo "short_sha=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Scan Source Files and Dependencies
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln,secret,misconfig
+          severity: HIGH,CRITICAL
+          exit-code: '1'
+          ignore-unfixed: true
+          format: table
+
+      - name: Build Backend Image
+        run: |
+          docker build \
+            --tag fitpulse-backend:${{ steps.image-tags.outputs.sha }} \
+            --file backend/Dockerfile \
+            backend
+
+      - name: Build Frontend Image
+        run: |
+          docker build \
+            --tag fitpulse-frontend:${{ steps.image-tags.outputs.sha }} \
+            --file frontend/Dockerfile \
+            frontend
+
+      - name: Scan Backend Image
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          scan-type: image
+          image-ref: fitpulse-backend:${{ steps.image-tags.outputs.sha }}
+          scanners: vuln
+          severity: HIGH,CRITICAL
+          exit-code: '1'
+          ignore-unfixed: true
+          format: table
+
+      - name: Scan Frontend Image
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          scan-type: image
+          image-ref: fitpulse-frontend:${{ steps.image-tags.outputs.sha }}
+          scanners: vuln
+          severity: HIGH,CRITICAL
+          exit-code: '1'
+          ignore-unfixed: true
+          format: table
+
+      - name: Log in to Docker Hub
+        if: >-
+          github.event_name == 'push' &&
+          (github.ref == 'refs/heads/main' ||
+           github.ref == 'refs/heads/master')
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Tag Images for Docker Hub
+        if: >-
+          github.event_name == 'push' &&
+          (github.ref == 'refs/heads/main' ||
+           github.ref == 'refs/heads/master')
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          IMAGE_SHA: ${{ steps.image-tags.outputs.sha }}
+        run: |
+          docker tag fitpulse-backend:${IMAGE_SHA} \
+            "${DOCKERHUB_USERNAME}/fitpulse-backend:${IMAGE_SHA}"
+
+          docker tag fitpulse-frontend:${IMAGE_SHA} \
+            "${DOCKERHUB_USERNAME}/fitpulse-frontend:${IMAGE_SHA}"
+
+      - name: Push SHA-Tagged Images
+        if: >-
+          github.event_name == 'push' &&
+          (github.ref == 'refs/heads/main' ||
+           github.ref == 'refs/heads/master')
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          IMAGE_SHA: ${{ steps.image-tags.outputs.sha }}
+        run: |
+          docker push "${DOCKERHUB_USERNAME}/fitpulse-backend:${IMAGE_SHA}"
+          docker push "${DOCKERHUB_USERNAME}/fitpulse-frontend:${IMAGE_SHA}"
