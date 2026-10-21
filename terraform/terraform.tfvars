@@ -1,7 +1,7 @@
-aws-region   = "us-east-1"
+aws_region   = "us-east-1"
 project-name = "gym-progress-tracker"
 
-ssh-allowed-cidr = "YOUR_IP_ADDRESS/32" # Replace with your actual
+# ssh-allowed-cidr = "105.127.15.211/32" # Replace with your actual
 
 ssh-port   = 22
 http-port  = 80

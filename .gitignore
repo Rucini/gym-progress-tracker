@@ -32,5 +32,11 @@ logs/
 
 # terraform files
 *.tfstate
-.terraform/
-.terraform.lock.hcl
+*.tfstate.*
+**.terraform/
+*.terraform.tfstate
+*.terraform/provider
+*.terraform.lock.hcl
+*.tfvars
+*.tfvars.json
+

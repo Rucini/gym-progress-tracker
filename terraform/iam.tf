@@ -1,4 +1,4 @@
-resource "aws-iam-role" "gym-tracker-ec2-role" {
+resource "aws_iam_role" "gym-tracker-ec2-role" {
   name = "${var.project-name}-ec2-role"
 
   assume_role_policy = jsonencode({
@@ -15,9 +15,9 @@ resource "aws-iam-role" "gym-tracker-ec2-role" {
   })
 }
 
-resource "aws-ami-role-policy" "gym-tracker-ec2-role-policy" {
+resource "aws_iam_role_policy" "gym-tracker-ec2-role-policy" {
   name = "${var.project-name}-s3-access"
-  role = aws-iam-role.gym-tracker-ec2-role.id
+  role = aws_iam_role.gym-tracker-ec2-role.id
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -26,7 +26,7 @@ resource "aws-ami-role-policy" "gym-tracker-ec2-role-policy" {
         Action = [
           "s3:ListBucket"
         ]
-        Effect   = "Allow"
+        Effect = "Allow"
         action = [
           "s3:GetObject",
           "s3:PutObject",
@@ -40,5 +40,5 @@ resource "aws-ami-role-policy" "gym-tracker-ec2-role-policy" {
 
 resource "aws_iam_instance_profile" "gym-tracker-instance-profile" {
   name = "${var.project-name}-instance-profile"
-  role = aws-iam-role.gym-tracker-ec2-role.name
+  role = aws_iam_role.gym-tracker-ec2-role.name
 }

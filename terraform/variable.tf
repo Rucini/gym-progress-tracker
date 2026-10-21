@@ -1,4 +1,4 @@
-variable "aws-region" {
+variable "aws_region" {
   description = "The AWS region to deploy resources"
   type        = string
   default     = "eu-north-1"
@@ -22,15 +22,15 @@ variable "public-subnet-cider" {
   default     = "10.0.1.0/24"
 }
 
-variable "ssh-allowed-cidr" {
-  description = "my IP address to allow SSH access to the EC2 instance"
-  type        = string
+#  variable "ssh-allowed-cidr" {
+#   description = "my IP address to allow SSH access to the EC2 instance"
+#   type        = string
 
-  validation {
-    condition     = can(cidernetmask(var.ssh-allowed-cidr))
-    error_message = "The ssh-allowed-cidr must be a valid CIDR block (e.g., 192.168.1.0/24)"
-  }
-}
+#   validation {
+#     condition     = can(cidernetmask(var.ssh-allowed-cidr))
+#     error_message = "The ssh-allowed-cidr must be a valid CIDR block (e.g., 192.168.1.0/24)"
+#   }
+# }
 
 variable "http-port" {
   description = "HTTP port"
@@ -61,7 +61,7 @@ variable "ec2-key-name" {
   type        = string
 }
 
-variable "application-bucket-name" {
+variable "application-bucket" {
   description = "The name of the S3 bucket to store application data"
   type        = string
 }

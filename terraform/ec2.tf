@@ -1,10 +1,10 @@
-data "aws-ami" "ubuntu" {
+data "aws_ami" "ubuntu" {
   most_recent = true
   owners      = ["099720109477"] # Canonical
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-20.04-amd64-server-*"]
+    values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"]
   }
 
   filter {
@@ -19,15 +19,19 @@ data "aws-ami" "ubuntu" {
 }
 
 resource "aws_instance" "gym-tracker-instance" {
-  ami                         = data.aws-ami.ubuntu.id
+  ami                         = data.aws_ami.ubuntu.id
   instance_type               = var.ec2-instance-type
   key_name                    = var.ec2-key-name
-  subnet_id                   = aws-subnet.gym-tracker-subnet.id
-  security_groups             = [aws-security-group.gym-tracker-sg.id]
+  subnet_id                   = aws_subnet.gym-tracker-subnet.id
+  security_groups             = [aws_security_group.gym-tracker-sg.id]
   associate_public_ip_address = true
   iam_instance_profile        = aws_iam_instance_profile.gym-tracker-instance-profile.name
 
   tags = {
     Name = "${var.project-name}-instance"
   }
+}
+
+data "http" "my_public_ip" {
+  url = "https://checkip.amazonaws.com"
 }

@@ -43,7 +43,7 @@ resource "aws_route_table" "gym-tracker-rt" {
 
 
 
-resource "aws-route_table_association" "gym-tracker-rt-assoc" {
+resource "aws_route_table_association" "gym-tracker-rt-assoc" {
   subnet_id      = aws_subnet.gym-tracker-subnet.id
-  route_table_id = aws_route-table.gym-tracker-rt.id
+  route_table_id = aws_route_table.gym-tracker-rt.id
 }

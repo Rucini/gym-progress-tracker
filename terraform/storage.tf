@@ -1,5 +1,5 @@
-resource "aws-s3-bucket" "app-storage" {
-  bucket = var.application-bucket-name
+resource "aws_s3_bucket" "app-storage" {
+  bucket = var.application-bucket
 
   tags = {
     Name    = "${var.project-name}-storage"
@@ -7,16 +7,16 @@ resource "aws-s3-bucket" "app-storage" {
   }
 }
 
-resource "aws-s3-bucket_versioning" "app-storage-versioning" {
-  bucket = aws-s3-bucket.app-storage.id
+resource "aws_s3_bucket_versioning" "app-storage-versioning" {
+  bucket = aws_s3_bucket.app-storage.id
 
   versioning_configuration {
     status = "Enabled"
   }
 }
 
-resource "aws-s3-bucket-server-side-encryption-configuration" "app-storage-encryption" {
-  bucket = aws-s3-bucket.app-storage.id
+resource "aws_s3_bucket_server_side_encryption_configuration" "app-storage-encryption" {
+  bucket = aws_s3_bucket.app-storage.id
 
   rule {
     apply_server_side_encryption_by_default {
@@ -26,7 +26,7 @@ resource "aws-s3-bucket-server-side-encryption-configuration" "app-storage-encry
 }
 
 resource "aws_s3_bucket_public_access_block" "app-storage-public-access-block" {
-  bucket = aws-s3-bucket.app-storage.id
+  bucket = aws_s3_bucket.app-storage.id
 
   block_public_acls       = true
   block_public_policy     = true

@@ -1,32 +1,32 @@
 output "vpc-id" {
-  value = aws-vpc.gym-tracker-vpc.id
+  value = aws_vpc.gym-tracker-vpc.id
 }
 
 output "subnet-id" {
-  value = aws-subnet.gym-tracker-subnet.id
+  value = aws_subnet.gym-tracker-subnet.id
 }
 
 output "internet-gateway-id" {
-  value = aws-internet_gateway.gym-tracker-igw.id
+  value = aws_internet_gateway.gym-tracker-igw.id
 }
 
 output "route-table-id" {
-  value = aws-route-table.gym-tracker-rt.id
+  value = aws_route_table.gym-tracker-rt.id
 }
 
 output "security-group-id" {
-  value = aws-security-group.gym-tracker-sg.id
+  value = aws_security_group.gym-tracker-sg.id
 }
 
 
-output "ec2-instance-public-ip" {
+output "ec2_instance_public-ip" {
   value = aws_instance.gym-tracker-instance.public_ip
 }
 
-output "ec2-instance-public-dns" {
+output "ec2_instance_public-dns" {
   value = aws_instance.gym-tracker-instance.public_dns
 }
 
-output "application-s3-bucket-name" {
-  value = aws_s3_bucket.application-bucket.bucket
+output  "aws_s3_bucket"{
+  value = aws_s3_bucket.app-storage.bucket
 }
